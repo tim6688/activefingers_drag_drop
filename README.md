@@ -1,163 +1,89 @@
-[![npm version](https://img.shields.io/npm/v/@shopify/draggable.svg?label=@shopify/draggable)](https://www.npmjs.com/package/@shopify/draggable) [![CI](https://github.com/shopify/draggable/workflows/CI/badge.svg)](https://github.com/Shopify/draggable/actions?query=branch%3Amain) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Shopify/draggable/blob/main/CONTRIBUTING.md) ![Bundle size](https://img.shields.io/badge/Bundle%20size-16.2kB-red.svg)
+![banner-examples](https://user-images.githubusercontent.com/643944/34655498-c9701942-f3d8-11e7-9dd5-6d225e7c5f6f.png)
 
-<a href="https://shopify.github.io/draggable" title="Visit Draggable website">
-  <img src="https://user-images.githubusercontent.com/643944/35602291-99e2c56e-0605-11e8-847f-95f1f6be1610.jpg" alt="">
-</a>
+> The Examples site has been made available to aid developers interested in building web apps with Draggable and/or contributing back to the library.
 
-# Development
+The Examples sandbox aims to answer common questions concerning Draggable’s implementation, as well as provide solutions to any conceivable drag and drop problem.
 
-**Draggable is no longer maintained by its original authors.** Maintenance of this repo has been passed on to new collaborators and is no longer worked on by anyone at Shopify.
+For instance, our solution to resolving touch events required duplicating the `source` node in the DOM. Depending on your design, this could cause friction as you attempt to maintain the correct layout while dragging. A bit of clever CSS can help resolve such layout issues. There are several examples in this repo that demonstrate solutions to this exact layout concern.
 
-**We are still looking for more maintainers!** If anyone is interested in answering / triaging issues, reviewing / rejecting / approving PRs, and authoring code for bug fixes / new features — please send an email to `max.hoffmann (at) shopify (dot) com`. You may be asked a few questions before obtaining collaboration permission, but if everything checks out, we will happily add you as a collaborator.
+## Local development
 
----
+1. Clone the `draggable` repo: `git clone git@github.com:Shopify/draggable.git`.
+2. Run `yarn && yarn start` in the root `draggable` directory.
+3. You can now access the local site at `http://localhost:3000` _(local address may vary - see console for correct url)_.
 
-Get complete control over drag and drop behaviour with Draggable! Draggable abstracts
-native browser events into a comprehensive API to create a custom drag and drop experience.
-`Draggable` comes with additional modules: `Sortable`, `Droppable`, `Swappable`. Draggable
-itself does not perform any sorting behaviour while dragging, but does the heavy lifting, e.g.
-creates mirror, emits events, manages sensor events, makes elements draggable.
+## Code style
 
-The additional modules are built on top of `Draggable` and therefore provide a similar API
-interface, for more information read the documentation below.
+This project uses Shopify’s [eslint](https://github.com/Shopify/eslint-plugin-shopify) and [stylelint](https://github.com/Shopify/stylelint-config-shopify) configs with a few alterations, defined in their respective `dot rc` file. If contributing back to this project, you must conform to the code style enforced by the config. If you are just playing around and don’t care about code style, just disable your editor’s linter.
 
-**Features**
+## Project structure
 
-- Works with native drag, mouse, touch and force touch events
-- Can extend dragging behaviour by hooking into draggables event life cycle
-- Can extend drag detection by adding sensors to draggable
-- The library is targeted ES6 first
+This project uses a co-located component structure, meaning everything relating to an individual component should all be found in the same folder. For the most part, you will work only in the `src/components` and `src/content` folders.
 
-## Table of Contents
+The root directory contains many config files that you can safely ignore unless you aim to change how files are compiled. It is strongly recommended to read the `package.json` to familiarize yourself with the available `scripts`.
 
-- [Install](#install)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Roadmap](#roadmap)
-- [Copyright](#copyright)
+### `src/views`
 
-## Install
+This folder contains the top-level page templates. The project uses Nunjucks for a templating language.
 
-You can install the library via npm.
+There is only one layout template, `views/templates/document.html`, which is extended by all of the `.html` files in the root of `/views`. These root views do the following:
 
-```bash
-npm install @shopify/draggable --save
-```
+1. Import global components such as `Sidebar` and `PageHeader`
+2. Define the `ViewAttr` for the view _(Page title, description, etc)_.
+3. Import and render the content component for that view.
 
-or via yarn:
+### `src/styles`
 
-```bash
-yarn add @shopify/draggable
-```
+This is where “global” styles, along with the `examples-app.scss` manifest, are located. There shouldn’t be much reason to alter any of these files other than adding new imports to `examples-app.scss`.
 
-or via CDN
+This project uses [Threads](https://github.com/beefchimi/threads) to manage style properties. You can see all of the Threads theme values in `styles/themes/examples`.
 
-```html
-<!-- Entire bundle -->
-<script type="module">
-  import {
-    Draggable,
-    Sortable,
-    Droppable,
-    Swappable,
-  } from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/index.mjs';
-</script>
-<!-- Draggable only -->
-<script type="module">
-  import Draggable from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/Draggable/Draggable.mjs';
-</script>
-<!-- Sortable only -->
-<script type="module">
-  import Sortable from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/Sortable/Sortable.mjs';
-</script>
-<!-- Droppable only -->
-<script type="module">
-  import Droppable from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/Droppable/Droppable.mjs';
-</script>
-<!-- Swappable only -->
-<script type="module">
-  import Swappable from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/Swappable/Swappable.mjs';
-</script>
-<!-- Plugins only -->
-<script type="module">
-  import * as Plugins from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/Plugins/index.mjs';
-</script>
-<!-- UMD browser -->
-<script src="https://cdn.jsdelivr.net/npm/@shopify/draggable/build/umd/index.min.js"></script>
-<script>
-  console.log(window.Draggable);
-</script>
-```
+### `src/scripts`
 
-## Browser Compatibility
+Just like with `styles/`, this is where our “global” scripts, along with the `examples-app.js` entry script is located. There shouldn’t be much reason to alter any of these files other than adding new imports and initializations to `examples-app.js`.
 
-Check the "browserlist" property in [package.json](https://github.com/Shopify/draggable/blob/main/package.json#L88) for more info
+### `src/content`
 
-| ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) | ![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) |
-| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Last 3 versions ✔                                                                       | Last 3 versions ✔                                                                          | Last 3 versions ✔                                                                    | Last 3 versions ✔                                                                       | Last 3 versions ✔                                                                 |
+This folder contains all the “content components”, which means all the code specific to an individual Example. Content is grouped by the “example type”: `Draggable`, `Droppable`, `Sortable`, `Swappable`, or `Plugins`. There is also a `Home` folder just for the landing page, and a `shared` folder for common functions and mixins that are reused across multiple content components.
 
-## Documentation
+Each individual example will have a single `.html` view, `.scss` file, and a `index.js`. The `index.js` is where you will initialize and author any `draggable` logic. The default function exported from each `index.js` file is imported and initialized in the `src/scripts/examples-app.js` entry file.
 
-You can find the documentation for each module within their respective directories.
+### `src/components`
 
-- [Draggable](src/Draggable)
-  - [DragEvent](src/Draggable/DragEvent)
-  - [DraggableEvent](src/Draggable/DraggableEvent)
-  - [Plugins](src/Draggable/Plugins)
-    - [Announcement](src/Draggable/Plugins/Announcement)
-    - [Focusable](src/Draggable/Plugins/Focusable)
-    - [Mirror](src/Draggable/Plugins/Mirror)
-    - [MirrorEvent](src/Draggable/Plugins/Mirror/MirrorEvent)
-    - [Scrollable](src/Draggable/Plugins/Scrollable)
-  - [Sensors](src/Draggable/Sensors)
-    - [DragSensor](src/Draggable/Sensors/DragSensor)
-    - [ForceTouchSensor](src/Draggable/Sensors/ForceTouchSensor)
-    - [MouseSensor](src/Draggable/Sensors/MouseSensor)
-    - [Sensor](src/Draggable/Sensors/Sensor)
-    - [SensorEvent](src/Draggable/Sensors/SensorEvent)
-    - [TouchSensor](src/Draggable/Sensors/TouchSensor)
-- [Droppable](src/Droppable)
-  - [DroppableEvent](src/Droppable/DroppableEvent)
-- [Plugins](src/Plugins)
-  - [Collidable](src/Plugins/Collidable)
-  - [ResizeMirror](src/Plugins/ResizeMirror)
-  - [Snappable](src/Plugins/Snappable)
-  - [SwapAnimation](src/Plugins/SwapAnimation)
-  - [SortAnimation](src/Plugins/SortAnimation)
-- [Sortable](src/Sortable)
-  - [SortableEvent](src/Sortable/SortableEvent)
-- [Swappable](src/Swappable)
-  - [SwappableEvent](src/Swappable/SwappableEvent)
+Here are all of the shared components, such as the `Block` component, used in many examples as draggable elements.
 
-### TypeScript
+Sometimes these are just `.scss` files, and the markup is written within a content component. If the styles contain values specific to that component, but need to be shared with other components, they will be split out into a `props.scss` file. Variant classes are split out into a `variants.scss` file.
 
-Draggable includes [TypeScript](http://typescriptlang.org) definitions.
+Some components have a `.html` file, which uses Nunjucks macros to define reusable components. For example, `Block` has several variations that can be toggled through its component API. Once a `Block` is imported into a view, you can render using:
 
-[Documentation](doc/typescript.md)
+`{{ Block.render('one', {index: 1, draggable: true}) }}`
 
-## Running examples
+That will render all of the markup for a `Block` component, using the string `one` as its `Heading`, and appending the classes `Block--item1` and `Block--isDraggable`.
 
-To run the `examples` project locally, simply run the following from the `draggable` root:
+Some components will also have their own JavaScript logic, such as `Plate`, which manages how the `Plate` component gets transformed via a drag event.
 
-```bash
-yarn && yarn start
-```
+### `src/root`
 
-This will start a server that hosts the contents of `examples/`. It also watches for file
-changes from both `src/` and `examples/src` and reloads the browser.
+This folder simply contains any files that need to be copied to the root `dist/` folder, such as a `manifest.json` or `.htaccess`. There should be no reason to alter files in this folder.
+
+### `tools`
+
+All of the build scripts are found in this folder. You shouldn’t need to go in here unless you want to change how the code is compiled.
+
+All JavaScript is generated with source maps, so you should be able to dig through errors and `console.log` statements without issue.
+
+## Running a server / watching files
+
+Running `yarn start` fires up a `browsersync` server to view the site. While running the server, when you add/make changes to any of the files in `src/`, the appropriate files will then be recompiled and output to the `dist/` folder. Once a file has been compiled, the browser will automatically reload the page. For `scss` changes, the new styles are injected into the page without causing a refresh.
+
+The file watcher will also look for changes in the `draggable/lib` folder, which means you can be running the examples server and making changes to the core library at the same time. Scripts will get recompiled and the browser will reload.
 
 ## Contributing
 
-Contributions are more than welcome, the code base is still new and needs more love.
+If while using Draggable, you encounter something that is not already covered in the Examples, please contribute back by creating a new Example under the correct grouping.
 
-For more information, please checkout the [contributing document](https://github.com/Shopify/draggable/blob/main/CONTRIBUTING.md).
+We ask that you follow our code style config and try your best to make the example consistent with the design of the site. Lean on the components already created to compose your example. If required, you can design and build your own components.
 
-## Related resources
+There is an [open issue](https://github.com/Shopify/draggable/issues/110) for building a CLI generator for new pages. If you are interested in taking this on, please assign yourself to the issue.
 
-- [Ember CLI Shim](https://github.com/timrourke/ember-cli-shopify-draggable-shim) on Github by [@timrourke](https://github.com/timrourke)
-- [Ember CLI Shim](https://www.npmjs.com/package/ember-cli-shopify-draggable-shim) on NPM by [@timrourke](https://github.com/timrourke)
-
-## Copyright
-
-Copyright (c) 2018-present Shopify. See LICENSE.md for further details.
+If you are unsure if your example has merit, feel free to [open an issue](https://github.com/Shopify/draggable/issues) and propose your idea. Always ping [@tsov](https://github.com/tsov) and [@beefchimi](https://github.com/beefchimi) for issues and code review!
