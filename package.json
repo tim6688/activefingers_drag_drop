@@ -29,7 +29,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "start": "concurrently \"yarn watch\" \"cd examples && yarn && yarn start\"",
-    "build": "yarn build:production",
+    "build": "yarn build:production --output public",
     "watch": "yarn build:development --watch",
     "release": "yarn run build:production && changeset publish",
     "lint": "eslint ./src ./test --max-warnings 0",
